@@ -1,3 +1,0 @@
-LexiconConfig = {}
-
-recordUrl = ""
