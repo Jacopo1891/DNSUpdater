@@ -21,7 +21,7 @@ def print_debug_info(current_ip_address, record_ip_address, result):
     print("Current record IP:", record_ip_address)
     if result:
         print("IP updated")
-    if result is None:
+    elif result is None:
         print("IP is up to date")
     else:
         print("Something went wrong")
@@ -31,10 +31,15 @@ def get_current_ip_address():
 
 def get_vpn_ip_address(provider):
     record_ip_address_response = provider.list_records(name=recordUrl)
-    return record_ip_address_response[0]["content"]
+    if len(record_ip_address_response) > 0:
+        return record_ip_address_response[0]["content"]
+    return None
 
 def update_record_vpn(provider, current_ip_address):
     return provider.update_record(name=recordUrl, content=current_ip_address)
+
+def create_record_vpn(provider, current_ip_address):
+    return provider.create_record(rtype="A", name=recordUrl, content=current_ip_address)
 
 def main():
     check_config()
@@ -44,7 +49,9 @@ def main():
     current_ip_address = get_current_ip_address()
     record_ip_address = get_vpn_ip_address(provider)
 
-    if record_ip_address != current_ip_address:
+    if record_ip_address is None:
+        result = create_record_vpn(provider, current_ip_address)
+    elif record_ip_address != current_ip_address:
         result = update_record_vpn(provider, current_ip_address)
     else:
         result = None
