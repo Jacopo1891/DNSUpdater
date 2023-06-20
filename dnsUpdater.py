@@ -1,5 +1,5 @@
-import os
-import sys
+import os, sys, requests
+
 from lexicon.client import Client
 from lexicon.config import ConfigResolver
 from lexicon.providers.ovh import Provider
@@ -41,6 +41,20 @@ def update_record_vpn(provider, current_ip_address):
 def create_record_vpn(provider, current_ip_address):
     return provider.create_record(rtype="A", name=recordUrl, content=current_ip_address)
 
+def send_notification(current_ip_address):
+    if bot_token is not None and chat_id is not None:
+        send_telegram_message(current_ip_address)
+
+def send_telegram_message(current_ip_address):
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    params = {
+        "chat_id": chat_id,
+        "text": f"Server has a new ip: {current_ip_address}."
+    }
+    response = requests.post(url, json=params)
+
+    return response.status_code == 200
+
 def main():
     check_config()
     provider = Provider(LexiconConfig)
@@ -55,7 +69,10 @@ def main():
         result = update_record_vpn(provider, current_ip_address)
     else:
         result = None
-        
+
+    if result:
+        result = send_notification(current_ip_address)
+
     if DEBUG:
         print_debug_info(current_ip_address, record_ip_address, result)
 
