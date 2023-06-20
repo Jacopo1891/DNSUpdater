@@ -41,9 +41,10 @@ def update_record_vpn(provider, current_ip_address):
 def create_record_vpn(provider, current_ip_address):
     return provider.create_record(rtype="A", name=recordUrl, content=current_ip_address)
 
-def send_notification(current_ip_address):
+def send_notification(current_ip_address, result):
     if bot_token is not None and chat_id is not None:
-        send_telegram_message(current_ip_address)
+        return send_telegram_message(current_ip_address)
+    return result
 
 def send_telegram_message(current_ip_address):
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
@@ -52,7 +53,6 @@ def send_telegram_message(current_ip_address):
         "text": f"Server has a new ip: {current_ip_address}."
     }
     response = requests.post(url, json=params)
-
     return response.status_code == 200
 
 def main():
@@ -71,7 +71,7 @@ def main():
         result = None
 
     if result:
-        result = send_notification(current_ip_address)
+        result = send_notification(current_ip_address, result)
 
     if DEBUG:
         print_debug_info(current_ip_address, record_ip_address, result)
