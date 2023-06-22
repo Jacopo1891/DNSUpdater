@@ -27,7 +27,8 @@ def print_debug_info(current_ip_address, record_ip_address, result):
         print("Something went wrong")
 
 def get_current_ip_address():
-    return os.popen('curl -s https://api.ipify.org').read().strip()
+    url = "https://ifconfig.me/"
+    return requests.get(url).text.strip()
 
 def get_vpn_ip_address(provider):
     record_ip_address_response = provider.list_records(name=recordUrl)
@@ -63,6 +64,9 @@ def main():
     current_ip_address = get_current_ip_address()
     record_ip_address = get_vpn_ip_address(provider)
 
+    if current_ip_address is None:
+        print("Current ip is not valid.")
+        sys.exit(1)       
     if record_ip_address is None:
         result = create_record_vpn(provider, current_ip_address)
     elif record_ip_address != current_ip_address:
