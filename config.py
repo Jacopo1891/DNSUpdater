@@ -1,6 +1,6 @@
-LexiconConfig = {}
+lexicon_config = {}
 
-recordUrl = ""
+record_url = ""
 
 bot_token = ""
 chat_id = ""
