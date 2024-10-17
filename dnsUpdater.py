@@ -35,10 +35,12 @@ def get_vpn_ip_address(config):
     return None
 
 def update_record_vpn(config, current_ip_address):
-    return config.update_record(name=record_url, content=current_ip_address)
+    with Client(config) as operations:
+        return operations.update_record(name=record_url, content=current_ip_address)
 
 def create_record_vpn(config, current_ip_address):
-    return config.create_record(rtype="A", name=record_url, content=current_ip_address)
+    with Client(config) as operations:
+        return operations.create_record(rtype="A", name=record_url, content=current_ip_address)
 
 def send_notification(current_ip_address, result):
     if bot_token is not None and chat_id is not None:
