@@ -51,7 +51,7 @@ def send_telegram_message(current_ip_address):
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     params = {
         "chat_id": chat_id,
-        "text": f"Server has a new ip: {current_ip_address}."
+        "text": f"Server has a new ip: {current_ip_address} at {record_url}."
     }
     response = requests.post(url, json=params)
     return response.status_code == 200
